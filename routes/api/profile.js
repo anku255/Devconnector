@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
+const validateProfileInput = require('../../validation/profile');
 
 // @route GET api/profile/test
 // @desc Tests profile route
@@ -19,6 +20,7 @@ router.get(
   (req, res) => {
     const errors = {};
     Profile.findOne({ user: req.user.id })
+      .populate('user', ['name', 'avatar'])
       .then(profile => {
         if (!profile) {
           errors.noprofile = 'There is no profile for this user';
@@ -37,7 +39,13 @@ router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    errors = {};
+    const { errors, isValid } = validateProfileInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
     // Get fields
     const profileFields = {};
     profileFields.user = req.user.id;
@@ -56,16 +64,12 @@ router.post(
 
     // Social
     profileFields.social = {};
-    if (req.body.youtube)
-      profileFields.social.youtube = req.body.social.youtube;
-    if (req.body.twitter)
-      profileFields.social.twitter = req.body.social.twitter;
-    if (req.body.facebook)
-      profileFields.social.facebook = req.body.social.facebook;
-    if (req.body.linkedin)
-      profileFields.social.linkedin = req.body.social.linkedin;
+    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
     if (req.body.instragram)
-      profileFields.social.instragram = req.body.social.instragram;
+      profileFields.social.instragram = req.body.instragram;
 
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (profile) {
