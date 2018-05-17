@@ -26,7 +26,7 @@ const postSchema = new Schema({
       }
     }
   ],
-  likes: [
+  comments: [
     {
       user: {
         type: Schema.Types.ObjectId,
