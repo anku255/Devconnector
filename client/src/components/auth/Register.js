@@ -99,7 +99,11 @@ class Register extends Component {
                   error={errors.password2}
                 />
 
-                <input type="submit" className="btn btn-info btn-block mt-4" />
+                <input
+                  type="submit"
+                  className="btn btn-info btn-block mt-4"
+                  value="Submit"
+                />
               </form>
             </div>
           </div>
@@ -120,4 +124,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { registeruser })(withRouter(Register));
+export default connect(
+  mapStateToProps,
+  { registeruser }
+)(withRouter(Register));
